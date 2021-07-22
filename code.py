@@ -48,7 +48,7 @@ def crawl_data(link: str, label: str, browser: WebDriver, writer) -> None:
     sleep(random.randint(1, 3))
     index = 0
 
-    for _ in range(20):
+    for _ in range(500):
         try:
             index += 1
             xpath = '//*[@id="automation_TV0"]/div[2]/article[{}]/p/a'.format(index)
