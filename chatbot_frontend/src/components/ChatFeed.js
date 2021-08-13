@@ -7,31 +7,78 @@ class ChatFeed extends React.Component {
     constructor(props) {
         super(props);
         this.state = {message: [], input: ''};
+        this.check = 'check';
         this.processInput = this.processInput.bind(this);
         this.processMessage = this.processMessage.bind(this);
         this.handleResponse = this.handleResponse.bind(this);
     }
 
+    componentDidMount() {
+        axios.get(
+            'http://127.0.0.1:8000/chatbot/answer'
+        ).then(this.handleResponse);
+
+        this.interval = setInterval(() => {
+            axios.get(
+                'http://127.0.0.1:8000/chatbot/answer'
+            ).then(this.handleResponse);
+        }, 5000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
+    }
+
     handleResponse(response) {
-        const answer = response.data.answer;
-        const state = this.state;
-        state.message.push(<div className='message'> 
-                <div className='theirmessage'>
-                    {answer}
-                </div>
-            </div>
-        );      
-        this.setState(state);
+        if (response.data.response.length > 0) {
+            const state = this.state;
+            const answer = response.data.response;
+            answer.forEach((item) => {
+                state.message.push(<div className='message'>
+                        <div style={{
+                                float: 'left',
+                                width: '35px',
+                                height: '35px',
+                                marginRight: '10px',
+                                backgroundImage: 'url(http://localhost:3000/images/fashion_icon.jpg)',
+                                backgroundSize: 'cover',
+                                borderRadius: '20px',
+                                border: '1px solid lightgray',
+                                margin: '10px 10px 10px 10px',
+                            }} 
+                        />
+                        <div className='theirmessage' style={{float: 'left'}}>
+                            {item}
+                        </div>
+                        <div style={{clear:'both'}}></div> 
+                    </div>
+                );
+            });      
+            this.setState(state);
+        }
     }
 
     processMessage() {
         if (this.state.input.length > 0) {
             let state = this.state;
-            state.message.push(<div className='message'> 
-                    <div className='mymessage'>
-                        {state.input}
+            state.message.push(<div className='message'>
+                    <div id="mess-send-check" style={{
+                        height: "12px",
+                        width: "12px",
+                        position: "absolute",
+                        bottom: "8px",
+                        right: "8px",
+                        borderRadius: "12px",
+                        border: "1px solid lightgray"
+                    }}>
+                        <span className={this.check} style={{right: "30%", top: "10%", position: "absolute"}} />
                     </div>
-                </div>
+
+                    <div className='mymessage'>
+                        {state.input} 
+                    </div>
+                    <div style={{clear:'both'}}></div> 
+                </div>  
             );
             
             const data = new FormData();
@@ -40,8 +87,12 @@ class ChatFeed extends React.Component {
             axios.post(
                 'http://127.0.0.1:8000/chatbot/answer',
                 data,
-                //{headers: {'Content-Type': 'multipart/form-data'}}
-            ).then(this.handleResponse).catch(function (error) {
+            ).then((response) => {
+                if (response.status === 200) {
+                    const check = document.getElementById('mess-send-check');
+                    check.classList.add('checked');
+                }
+            }).catch(function (error) {
                 console.log(error);
             });
 
@@ -60,15 +111,17 @@ class ChatFeed extends React.Component {
         const style = {
             width: "100%",
             height: "100px",
-            border: "1px solid black",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
+            textAlign: "center",
+            borderBottom: "1px solid lightgray"
         };
     
         return (
             <div style={style}>
-                This is header 
+                <p> 
+                    <b style={{fontFamily: "cursive", fontSize: "25px", color: "#0096FF"}}> Tiêu đề </b> 
+                    <br /> <br />
+                    <span style={{color: "#0096FF", fontSize: "18px"}}> mô tả </span>
+                </p>
             </div>
         );
     }
@@ -92,12 +145,12 @@ class ChatFeed extends React.Component {
         const style = {
             width: "100%",
             height: "60px",
+            borderTop: "1px solid lightgray"
         };
     
         const tool_style = {
             width: "150px",
             height: "100%",
-            border: "1px solid blue",
             float: "left",
             display: "flex",
             alignItems: "center",
@@ -106,7 +159,6 @@ class ChatFeed extends React.Component {
     
         const input_style = {
             height: "100%",
-            border: "1px solid green",
             overflow: "auto",
             display: "flex",
             alignItems: "center",
@@ -116,11 +168,10 @@ class ChatFeed extends React.Component {
         const but_style = {
             width: "50px",
             height: "100%",
-            border: "1px solid black",  
             float: "right",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
         }
     
         return (

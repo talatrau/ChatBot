@@ -33,7 +33,7 @@ label = {
   9: 'feedback'
 }
 
-
+mess_stack = []
 
 def datapreprocessing(data, stop_words):
   for i in range(len(data)):
@@ -56,11 +56,18 @@ def datapreprocessing(data, stop_words):
 
 
 def intent(sentence):
-    clean_sentence = datapreprocessing([sentence], stopword)
-    clean_sentence = tf.transform(clean_sentence).toarray()
+  clean_sentence = datapreprocessing([sentence], stopword)
+  clean_sentence = tf.transform(clean_sentence).toarray()
 
-    pred = model.predict(clean_sentence)[0]
+  pred = model.predict(clean_sentence)[0]
 
-    return label[pred]
+  mess_stack.append(label[pred])
+
+
+def getMessStack():
+  global mess_stack
+  res = mess_stack
+  mess_stack = []
+  return res
 
     

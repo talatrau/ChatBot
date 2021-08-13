@@ -6,7 +6,7 @@ import './components.css'
 
 const Content = () => {
     return (
-        <div id="content">
+        <div className="content">
             <ChatList />
             <ChatInfor />
             <ChatFeed />
