@@ -179,6 +179,10 @@ input:focus {
     -webkit-transform: rotate(45deg);
 }
 
+.uncheck {
+    background-color: white;
+}
+
 .checked{
     background-color: lightgray;
 }
