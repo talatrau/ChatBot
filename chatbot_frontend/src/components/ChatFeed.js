@@ -62,7 +62,7 @@ class ChatFeed extends React.Component {
         if (this.state.input.length > 0) {
             let state = this.state;
             state.message.push(<div className='message'>
-                    <div id="mess-send-check" style={{
+                    <div className="uncheck" style={{
                         height: "12px",
                         width: "12px",
                         position: "absolute",
@@ -89,8 +89,9 @@ class ChatFeed extends React.Component {
                 data,
             ).then((response) => {
                 if (response.status === 200) {
-                    const check = document.getElementById('mess-send-check');
-                    check.classList.add('checked');
+                    const check_icon = document.getElementsByClassName('uncheck');
+                    const last_check_icon = check_icon[check_icon.length - 1];
+                    last_check_icon.classList.replace('uncheck', 'checked');
                 }
             }).catch(function (error) {
                 console.log(error);
