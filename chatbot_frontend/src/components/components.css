@@ -58,6 +58,7 @@ input:focus {
     margin-bottom: 10px;
     border-radius: 20px;
     float: right;
+    text-align: right;
 }
 
 .theirmessage {
@@ -69,6 +70,7 @@ input:focus {
     margin-bottom: 10px;
     border-radius: 20px;
     float: left;
+    text-align: left;
 }
 
 

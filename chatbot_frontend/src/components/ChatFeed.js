@@ -114,27 +114,43 @@ class ChatFeed extends React.Component {
         e.preventDefault();
         if (this.state.input.length > 0 || this.state.file !== null) {
             let state = this.state;
-            if (state.input.length > 0) {
-                state.message.push(<div className='message'>
-                        <div className="uncheck" style={{
-                            height: "12px",
-                            width: "12px",
-                            position: "absolute",
-                            bottom: "8px",
-                            right: "8px",
-                            borderRadius: "12px",
-                            border: "1px solid lightgray"
-                        }}>
-                            <span className={this.check} style={{right: "30%", top: "10%", position: "absolute"}} />
-                        </div>
-
-                        <div className='mymessage'>
-                            {state.input} 
-                        </div>
-                        <div style={{clear:'both'}}></div> 
-                    </div>  
-                );
+            let mess = null;
+            if (state.file === null) {
+                mess = (<div className='mymessage'> {state.input} </div>);
             }
+            else if (state.input.length === 0) {
+                const url = URL.createObjectURL(this.state.file);
+                mess = (<div className='mymessage'> 
+                    <img src={url} alt='Img' style={{height: '150px', width: '100%', objectFit: 'contain'}} />
+                </div>);
+            }
+            else {
+                const url = URL.createObjectURL(this.state.file);
+                mess = (<div className='mymessage'> 
+                    {this.state.input}
+                    <img src={url} alt='Img' style={{height: '150px', width: '100%', objectFit: 'contain', marginTop: "10px"}} />
+                </div>);
+            }
+
+            state.message.push(<div className='message'>
+                    <div className="uncheck" style={{
+                        height: "12px",
+                        width: "12px",
+                        position: "absolute",
+                        bottom: "8px",
+                        right: "8px",
+                        borderRadius: "12px",
+                        border: "1px solid lightgray"
+                    }}>
+                        <span className={this.check} style={{right: "30%", top: "10%", position: "absolute"}} />
+                    </div>
+
+                    {mess}
+                    
+                    <div style={{clear:'both'}}></div> 
+                </div>  
+            );
+
             const data = new FormData();
             data.append('message', state.input);
             data.append('img', state.file);
