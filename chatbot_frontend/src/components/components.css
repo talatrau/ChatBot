@@ -186,3 +186,12 @@ input:focus {
 .checked{
     background-color: lightgray;
 }
+
+.del-button {
+    cursor: pointer;
+    background-color: white;
+}
+
+.del-button:hover {
+    background-color: lightgray;
+}
