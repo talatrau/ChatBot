@@ -18,6 +18,8 @@ pip install scikit-learn==0.22.2.post1
 pip install underthesea
 pip install djangorestframework
 pip install django-cors-headers
+pip install pillow
+pip install psycopg2
 ```
 
 ### Run application:
