@@ -20,6 +20,8 @@ pip install djangorestframework
 pip install django-cors-headers
 pip install pillow
 pip install psycopg2
+pip install tensorflow
+pip install tf-nightly
 ```
 
 ### Run application:
