@@ -22,12 +22,20 @@ pip install pillow
 pip install psycopg2
 pip install tensorflow
 pip install tf-nightly
+
+# docker for postgresql
+docker pull postgresql
 ```
 
 ### Run application:
 
 ```
-# run Django first with command
+# run docker first with command
+docker run --name postsql -d -p 2345:5432 -e POSTGRES_PASSWORD=password postgres
+
+# run Django with command
+python chatbot_backend/manage.py makemigrations
+python chatbot_backend/manage.py migrate
 python chatbot_backend/manage.py runserver
 
 # run Reactjs with command
