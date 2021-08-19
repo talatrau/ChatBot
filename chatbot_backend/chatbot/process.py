@@ -1,5 +1,7 @@
 import re
 import os
+import json
+import time
 import numpy as np
 import pickle
 import io
@@ -138,19 +140,53 @@ def intent(sentence):
 
   pred = intent_model.predict(clean_sentence)[0]
 
-  mess_stack.append(__label2Intent(pred))
+  return __label2Intent(pred)
 
 
 def fashionImg(rawData):
   image = Image.open(io.BytesIO(rawData))
-  image = np.array(image)
-  img = cv2.resize(image, (224, 224))
+  img = np.array(image)
+  img = cv2.resize(img, (224, 224))
   img = img.reshape(1, 224, 224, 3)
   X_input = img / 255
   prediction = np.argmax(fashion_model.predict(X_input))
   q = Fashion.objects.get(pk=__label2Fashion(prediction)).__dict__
   res = "ID: {} | {} - {} - size {} - {}".format(q['id'], q['name'], q['color'], q['size'], q['brand_id'])
-  mess_stack.append(res)
+
+  return res, image
+
+
+
+def processMessage(user, topic, mess, file):
+  text = mess
+  img_src = ""
+
+  path = os.path.join(settings.BASE_DIR, 'chatbot\\chat_history')
+  path = os.path.join(path, topic)
+
+  if not os.path.exists(path):
+    os.makedirs(path)
+
+  if mess:
+    intent_mess = intent(mess)
+    mess_stack.append(intent_mess)
+  
+  if file: 
+    fashion_mess, img = fashionImg(file)
+    file_path = str(settings.BASE_DIR) + '\\media\\images\\' + user + "_" + str(time.time()).replace('.', '') + ".jpg"
+    img_src = file_path
+    img.save(file_path)
+    mess_stack.append(fashion_mess)
+
+  json_path = path + '\\' + user + '_history.txt'
+  data = {'isbot': False, 'user': user, 'mess': text, 'src': img_src}
+  data = {'isbot': True, 'user': user, 'mess': intent_mess, 'src': ""}
+  data = {'isbot': True, 'user': user, 'mess': fashion_mess, 'src': ""}
+  jsonString = json.dumps(data) + "\n"
+  jsonFile = open(json_path, "a")
+  jsonFile.write(jsonString)
+  jsonFile.close()
+
 
 
 def getMessStack():

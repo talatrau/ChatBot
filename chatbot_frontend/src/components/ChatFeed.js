@@ -9,6 +9,8 @@ class ChatFeed extends React.Component {
         this.state = {message: [], input: '', file: null};
         this.check = 'check';
         this.messFormHeight = '60px';
+        this.user = props.user;
+        this.topic = props.topic;
         this.processInput = this.processInput.bind(this);
         this.processMessage = this.processMessage.bind(this);
         this.handleResponse = this.handleResponse.bind(this);
@@ -154,6 +156,8 @@ class ChatFeed extends React.Component {
             const data = new FormData();
             data.append('message', state.input);
             data.append('img', state.file);
+            data.append('topic', this.topic);
+            data.append('user', this.user);
 
             console.log(data.get('file'));
 

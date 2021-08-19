@@ -4,4 +4,6 @@
 
 # database
 /db.sqlite3
-/chatbot_backend/migrations/__pycache__
+/chatbot/migrations/__pycache__
+/media
+/chatbot/chat_history

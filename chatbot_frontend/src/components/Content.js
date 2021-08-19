@@ -7,9 +7,9 @@ import './components.css'
 const Content = () => {
     return (
         <div className="content">
-            <ChatList />
-            <ChatInfor />
-            <ChatFeed />
+            <ChatList user='talatrau' />
+            <ChatInfor user='talatrau' />
+            <ChatFeed user='talatrau' topic='fashion_bot' />
         </div>
     );
 }
