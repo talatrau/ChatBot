@@ -1,4 +1,4 @@
-# Intent Classfication API
+# Chatbot API
 
 ### Technology:
 Frontend use **Reactjs** <br>
