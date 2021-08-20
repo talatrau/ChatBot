@@ -5,7 +5,7 @@ import Content from './components/Content';
 const App = () => {
     return (
         <div style={{height:'100vh', width:'100%'}}>
-            <Header />
+            <Header  />
             <Content />
         </div>
     );

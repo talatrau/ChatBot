@@ -9,7 +9,7 @@ const Content = () => {
         <div className="content">
             <ChatList user='talatrau' />
             <ChatInfor user='talatrau' />
-            <ChatFeed user='talatrau' topic='fashion_bot' />
+            <ChatFeed user='talatrau' topic='fashion' />
         </div>
     );
 }

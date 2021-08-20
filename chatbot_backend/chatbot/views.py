@@ -30,11 +30,15 @@ def answer(request):
         return JsonResponse({'response': answer})
 
 
-def getImage(request, img):
+def getFashionChatHistory(request, user):
     if request.method == 'GET':
-        src = "/media/images/" + img
-        html = """ 
-                <img src={} alt="image" />
-            """.format(src)
-
-        return HttpResponse(html)
+        data = []
+        path = './chatbot/chat_history/fashion/' + user + '_history.txt'
+        try:
+            history = open(path, 'r', encoding='utf-8')
+            data = history.read().split('\n')[:-1]
+            history.close()
+        except FileNotFoundError:
+            history.close()
+        finally:
+            return JsonResponse({'response': data})

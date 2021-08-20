@@ -3,5 +3,5 @@ from django.urls import path
 
 urlpatterns = [
     path('answer', views.answer, name='answer'),
-    path('fashion/<img>', views.getImage, name='getImage'),
+    path('fashion/<user>', views.getFashionChatHistory, name='getFashionChatHistory'),
 ]

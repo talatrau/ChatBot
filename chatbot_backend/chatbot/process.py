@@ -160,6 +160,8 @@ def fashionImg(rawData):
 def processMessage(user, topic, mess, file):
   text = mess
   img_src = ""
+  intent_mess = ""
+  fashion_mess = ""
 
   path = os.path.join(settings.BASE_DIR, 'chatbot\\chat_history')
   path = os.path.join(path, topic)
@@ -169,24 +171,33 @@ def processMessage(user, topic, mess, file):
 
   if mess:
     intent_mess = intent(mess)
-    mess_stack.append(intent_mess)
+    mess_stack.append({'isbot': True, 'user': user, 'mess': intent_mess, 'src': ""})
   
   if file: 
     fashion_mess, img = fashionImg(file)
     file_path = str(settings.BASE_DIR) + '\\media\\images\\' + user + "_" + str(time.time()).replace('.', '') + ".jpg"
-    img_src = file_path
+    img_src = 'http://localhost:8000/media/images/' + user + '_' + str(time.time()).replace('.', '') + '.jpg'
     img.save(file_path)
-    mess_stack.append(fashion_mess)
+    mess_stack.append({'isbot': True, 'user': user, 'mess': fashion_mess, 'src': ""})
 
   json_path = path + '\\' + user + '_history.txt'
-  data = {'isbot': False, 'user': user, 'mess': text, 'src': img_src}
-  data = {'isbot': True, 'user': user, 'mess': intent_mess, 'src': ""}
-  data = {'isbot': True, 'user': user, 'mess': fashion_mess, 'src': ""}
-  jsonString = json.dumps(data) + "\n"
   jsonFile = open(json_path, "a")
+  
+  data = {'isbot': False, 'user': user, 'mess': text, 'src': img_src}
+  jsonString = json.dumps(data) + "\n"
   jsonFile.write(jsonString)
-  jsonFile.close()
 
+  if intent_mess:
+    data = {'isbot': True, 'user': user, 'mess': intent_mess, 'src': ""}
+    jsonString = json.dumps(data) + "\n"
+    jsonFile.write(jsonString)
+
+  if fashion_mess:
+    data = {'isbot': True, 'user': user, 'mess': fashion_mess, 'src': ""}
+    jsonString = json.dumps(data) + "\n"
+    jsonFile.write(jsonString)
+
+  jsonFile.close()
 
 
 def getMessStack():

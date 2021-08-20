@@ -7,7 +7,7 @@ class ChatFeed extends React.Component {
     constructor(props) {
         super(props);
         this.state = {message: [], input: '', file: null};
-        this.check = 'check';
+        this.index = 0;
         this.messFormHeight = '60px';
         this.user = props.user;
         this.topic = props.topic;
@@ -16,6 +16,7 @@ class ChatFeed extends React.Component {
         this.handleResponse = this.handleResponse.bind(this);
         this.fileDisplay = this.fileDisplay.bind(this);
         this.fileRemove = this.fileRemove.bind(this);
+        this.handleHistory = this.handleHistory.bind(this);
     }
 
     fileDisplay() {
@@ -69,8 +70,8 @@ class ChatFeed extends React.Component {
 
     componentDidMount() {
         axios.get(
-            'http://127.0.0.1:8000/chatbot/answer'
-        ).then(this.handleResponse);
+            'http://127.0.0.1:8000/chatbot/' + this.topic + '/' + this.user
+        ).then(this.handleHistory);
 
         this.interval = setInterval(() => {
             axios.get(
@@ -83,12 +84,62 @@ class ChatFeed extends React.Component {
         clearInterval(this.interval);
     }
 
-    handleResponse(response) {
-        if (response.data.response.length > 0) {
-            const state = this.state;
-            const answer = response.data.response;
-            answer.forEach((item) => {
-                state.message.push(<div className='message'>
+    pushMyMessage(state, mess, url, flag) {
+        let item = null;
+        const i = this.index;
+        this.index++;
+        if (url === "") {
+            item = (<div className='mymessage'> {mess} </div>);
+        }
+        else if (mess.length === 0) {
+            item = (<div className='mymessage'> 
+                <a href={url}> 
+                    <img src={url} alt='Img' style={{height: '150px', width: '100%', objectFit: 'contain'}} />
+                </a>
+            </div>);
+        }
+        else {
+            item = (<div className='mymessage'> 
+                {mess}
+                <a href={url}>
+                    <img src={url} alt='Img' style={{height: '150px', width: '100%', objectFit: 'contain', marginTop: "10px"}} />
+                </a>
+            </div>);
+        }
+
+        if (flag) {
+            state.message.push(<div className='message' id={i} >
+                    {item}
+                    <div style={{clear:'both'}}></div> 
+                </div>  
+            );
+        }
+        else {
+            state.message.push(<div className='message' id={i} >
+                    <div className='uncheck' style={{
+                        height: "12px",
+                        width: "12px",
+                        position: "absolute",
+                        bottom: "8px",
+                        right: "8px",
+                        borderRadius: "12px",
+                        border: "1px solid lightgray"
+                    }}>
+                        <span className='check' style={{right: "30%", top: "10%", position: "absolute"}} />
+                    </div>
+                    {item}
+                    <div style={{clear:'both'}}></div> 
+                </div>  
+            );
+        }
+
+        this.setState(state);
+    }
+
+    pushTheirMessage(state, item) {
+        const i = this.index;
+        this.index++;
+        state.message.push(<div className='message' id={i} key={i}>
                         <div style={{
                                 float: 'left',
                                 width: '35px',
@@ -106,9 +157,39 @@ class ChatFeed extends React.Component {
                         </div>
                         <div style={{clear:'both'}}></div> 
                     </div>
-                );
+        );
+        this.setState(state);
+    }
+
+    handleHistory(response) {
+        if (response.data.response.length > 0) {
+            const state = this.state;
+            const answer = response.data.response;
+            answer.forEach((item) => {
+                const obj = JSON.parse(item);
+                if (obj.isbot) {
+                    this.pushTheirMessage(state, obj.mess);
+                } 
+                else {
+                    this.pushMyMessage(state, obj.mess, obj.src, true);
+                }
             });      
-            this.setState(state);
+        }
+    }
+
+    handleResponse(response) {
+        if (response.data.response.length > 0) {
+            const mess_div = document.getElementById(this.index - 1);
+            const check_icon = mess_div.children[0];
+            mess_div.removeChild(check_icon);
+            
+            const state = this.state;
+            const answer = response.data.response;
+            answer.forEach((item) => {
+                if (item.isbot) {
+                    this.pushTheirMessage(state, item.mess);
+                }
+            });         
         }
     }
 
@@ -116,50 +197,20 @@ class ChatFeed extends React.Component {
         e.preventDefault();
         if (this.state.input.length > 0 || this.state.file !== null) {
             let state = this.state;
-            let mess = null;
-            if (state.file === null) {
-                mess = (<div className='mymessage'> {state.input} </div>);
-            }
-            else if (state.input.length === 0) {
-                const url = URL.createObjectURL(this.state.file);
-                mess = (<div className='mymessage'> 
-                    <img src={url} alt='Img' style={{height: '150px', width: '100%', objectFit: 'contain'}} />
-                </div>);
-            }
-            else {
-                const url = URL.createObjectURL(this.state.file);
-                mess = (<div className='mymessage'> 
-                    {this.state.input}
-                    <img src={url} alt='Img' style={{height: '150px', width: '100%', objectFit: 'contain', marginTop: "10px"}} />
-                </div>);
-            }
+            let mess = state.input;
+            let url = "";
 
-            state.message.push(<div className='message'>
-                    <div className="uncheck" style={{
-                        height: "12px",
-                        width: "12px",
-                        position: "absolute",
-                        bottom: "8px",
-                        right: "8px",
-                        borderRadius: "12px",
-                        border: "1px solid lightgray"
-                    }}>
-                        <span className={this.check} style={{right: "30%", top: "10%", position: "absolute"}} />
-                    </div>
-
-                    {mess}
-                    
-                    <div style={{clear:'both'}}></div> 
-                </div>  
-            );
-
+            if (state.file !== null) {
+                url = URL.createObjectURL(this.state.file);
+            }
+            
+            this.pushMyMessage(state, mess, url, false);
+            
             const data = new FormData();
             data.append('message', state.input);
             data.append('img', state.file);
             data.append('topic', this.topic);
             data.append('user', this.user);
-
-            console.log(data.get('file'));
 
             axios.post(
                 'http://127.0.0.1:8000/chatbot/answer',
@@ -167,9 +218,9 @@ class ChatFeed extends React.Component {
                 {headers: {"content-type": "multipart/form-data"}}
             ).then((response) => {
                 if (response.status === 200) {
-                    const check_icon = document.getElementsByClassName('uncheck');
-                    const last_check_icon = check_icon[check_icon.length - 1];
-                    last_check_icon.classList.replace('uncheck', 'checked');
+                    const mess_div = document.getElementById(this.index - 1);
+                    const check_icon = mess_div.children[0];
+                    check_icon.classList.replace('uncheck', 'checked');
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -182,11 +233,13 @@ class ChatFeed extends React.Component {
         }
     }
 
+
     processInput(event) {
         let state = this.state;
         state.input = event.target.value;
         this.setState(state);
     }
+
 
     FeedTopic() {
         const style = {
