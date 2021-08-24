@@ -1,1 +1,1 @@
-*intent_svm filter=lfs diff=lfs merge=lfs -text
+chatbot_backend/chatbot/model/entity_rf filter=lfs diff=lfs merge=lfs -text
