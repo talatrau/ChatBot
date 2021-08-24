@@ -22,6 +22,7 @@ pip install pillow
 pip install psycopg2
 pip install tensorflow
 pip install tf-nightly
+pip install scikit-multilearn
 
 # docker for postgresql
 docker pull postgresql
