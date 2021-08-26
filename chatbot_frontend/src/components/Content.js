@@ -5,11 +5,13 @@ import ChatInfor from './ChatInfor';
 import './components.css'
 
 const Content = () => {
+    const user = localStorage.getItem('user');
+
     return (
         <div className="content">
-            <ChatList user='talatrau' />
-            <ChatInfor user='talatrau' />
-            <ChatFeed user='talatrau' topic='fashion' />
+            <ChatList user={user} />
+            <ChatInfor user={user} />
+            <ChatFeed user={user} topic='fashion' />
         </div>
     );
 }

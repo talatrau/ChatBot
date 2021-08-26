@@ -1,6 +1,7 @@
 from django.http.response import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
+from django.contrib.auth import authenticate, login, decorators
+from django.contrib.auth.models import User
 
 from chatbot.controller import getResponse, processMessage
 
@@ -42,3 +43,20 @@ def getFashionChatHistory(request, user):
             history.close()
         finally:
             return JsonResponse({'response': data})
+
+
+@csrf_exempt
+def login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        try:
+            user = User.objects.get(username=username)
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                #login(request, user)
+                return JsonResponse({'user': username, 'state': 'success'})
+            return JsonResponse({'user': username, 'state': 'failed'})
+        except:
+            return JsonResponse({'user': username, 'state': 'failed'})
+    return JsonResponse({})
