@@ -2,7 +2,7 @@ from django.http.response import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 
-from chatbot.process import getMessStack, processMessage
+from chatbot.controller import getResponse, processMessage
 
 # Create your views here.
 @csrf_exempt
@@ -26,7 +26,7 @@ def answer(request):
 
         return JsonResponse({})
     elif request.method == 'GET':
-        answer = getMessStack()
+        answer = getResponse()
         return JsonResponse({'response': answer})
 
 

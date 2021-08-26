@@ -133,8 +133,20 @@ class Fashion(models.Model):
     id = models.CharField(primary_key=True, max_length=10)
     name = models.CharField(max_length=50)
     color = models.CharField(max_length=50)
-    size = models.CharField(max_length=10)
     brand = models.ForeignKey(Company, models.DO_NOTHING, db_column='brand')
+    material = models.CharField(max_length=10, blank=True, null=True)
 
     class Meta:
         db_table = 'fashion'
+
+
+class FashionDetail(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    fashionid = models.ForeignKey(Fashion, models.DO_NOTHING, db_column='fashionid', blank=True, null=True)
+    size = models.CharField(max_length=3, blank=True, null=True)
+    amount = models.IntegerField(blank=True, null=True)
+    cost = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'fashiondetail'
+        unique_together = (('id', 'size'),)

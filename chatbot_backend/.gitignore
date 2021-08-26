@@ -1,6 +1,7 @@
 # cache
 /chatbot/__pycache__
 /chatbot_backend/__pycache__
+/chatbot/classification/__pycache__
 
 # database
 /db.sqlite3

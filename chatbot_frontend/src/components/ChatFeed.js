@@ -11,6 +11,7 @@ class ChatFeed extends React.Component {
         this.messFormHeight = '60px';
         this.user = props.user;
         this.topic = props.topic;
+        this.botEnd = false;
         this.processInput = this.processInput.bind(this);
         this.processMessage = this.processMessage.bind(this);
         this.handleResponse = this.handleResponse.bind(this);
@@ -80,6 +81,11 @@ class ChatFeed extends React.Component {
         }, 5000);
     }
 
+    componentDidUpdate() {
+        var feedmessage = document.getElementById("FeedMessage");
+        feedmessage.scrollTop = feedmessage.offsetHeight;
+    }
+
     componentWillUnmount() {
         clearInterval(this.interval);
     }
@@ -133,6 +139,7 @@ class ChatFeed extends React.Component {
             );
         }
 
+        this.botEnd = false;
         this.setState(state);
     }
 
@@ -158,6 +165,7 @@ class ChatFeed extends React.Component {
                         <div style={{clear:'both'}}></div> 
                     </div>
         );
+        this.botEnd = true;
         this.setState(state);
     }
 
@@ -179,16 +187,16 @@ class ChatFeed extends React.Component {
 
     handleResponse(response) {
         if (response.data.response.length > 0) {
-            const mess_div = document.getElementById(this.index - 1);
-            const check_icon = mess_div.children[0];
-            mess_div.removeChild(check_icon);
-            
-            const state = this.state;
+            if (!this.botEnd) {
+                const mess_div = document.getElementById(this.index - 1);
+                const check_icon = mess_div.children[0];
+                mess_div.removeChild(check_icon);
+            }
+
+            let state = this.state;
             const answer = response.data.response;
             answer.forEach((item) => {
-                if (item.isbot) {
-                    this.pushTheirMessage(state, item.mess);
-                }
+                this.pushTheirMessage(state, item);
             });         
         }
     }
@@ -204,8 +212,14 @@ class ChatFeed extends React.Component {
                 url = URL.createObjectURL(this.state.file);
             }
             
+            if (this.index > 0 && !this.botEnd) {
+                const mess_div = document.getElementById(this.index - 1);
+                const check_icon = mess_div.children[0];
+                mess_div.removeChild(check_icon);
+            }
             this.pushMyMessage(state, mess, url, false);
             
+
             const data = new FormData();
             data.append('message', state.input);
             data.append('img', state.file);
@@ -269,8 +283,8 @@ class ChatFeed extends React.Component {
         };
 
         return (
-            <div style={style}>
-                {this.state.message}
+            <div style={style} id="FeedMessage">
+                {this.state.message.map(mess => mess)}
             </div>
         );
     }
