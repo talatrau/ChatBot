@@ -5,7 +5,7 @@ import ChatInfor from './ChatInfor';
 import './components.css'
 
 const Content = () => {
-    const user = localStorage.getItem('user');
+    const user = sessionStorage.getItem('user');
 
     return (
         <div className="content">

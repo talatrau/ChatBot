@@ -10,6 +10,7 @@ class ChatFeed extends React.Component {
         this.index = 0;
         this.messFormHeight = '60px';
         this.user = props.user;
+        console.log(this.user);
         this.topic = props.topic;
         this.botEnd = false;
         this.processInput = this.processInput.bind(this);
